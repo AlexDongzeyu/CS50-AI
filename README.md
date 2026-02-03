@@ -1,0 +1,1 @@
+# Hello this is my lecture notes and projects for CS50 AI course.
