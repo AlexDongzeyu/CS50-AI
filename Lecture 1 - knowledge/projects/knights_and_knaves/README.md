@@ -44,9 +44,11 @@ Engineer a knowledge-based agent that is capable of solving the logical  based o
 6. **Verification:** Run model_check and document results.
 
 **2.3 Troubleshooting Techniques**
-- 
+- If the output is empty, it means the KB contains a contradiction (e.g., asserting A and Not A). We should comment out individual sentences to isolate the conflicting rule.
+- If the output lists a character as both Knight and Knave, the game rules are missing. We should verify validate_game_logic is being called.
+- If Puzzle 3 loops infinitely, check parenthesis balance in nested Biconditionals.
 
-**2.3 General Logic Analysis**
+**2.4 General Logic Analysis**
 
 Translating English into logic, we need to analyze the relationship between a speakek, their statement, and the reality. The chart below shows the two valid states of the model.
 
@@ -57,7 +59,7 @@ Translating English into logic, we need to analyze the relationship between a sp
 
 In both valid states, C and S share the same truth value, allowing us to use a biconditional operator: $$ C \iff S$$ This is becasue a character is a Knight if and only if their statement is true.
 
-**2.4 Puzzle 0 Analysis**
+**2.5 Puzzle 0 Analysis**
 
 **Statement:** A says "I am both a Knight and a Knave."
 
@@ -68,7 +70,7 @@ We know that a Knight cannot lie, and a Knave cannot tell the truth. Since "Knig
 | 1 | Knight (True) | True AND False = False | Contradiction (Knight said False) | Impossible |
 | 2 | Knave (False) | True AND False = False | Consistent (Knave said False) | Valid |
 
-**2.5 Puzzle 1 Analysis**
+**2.6 Puzzle 1 Analysis**
 
 **Statement:** A says "We are both Knaves."
 
@@ -81,7 +83,7 @@ If A is a Knight, he is telling the truth, so he is a Knave which contradicts. T
 | 3 | Knave | Knight | False | Consistent (Knave said False) | Valid |
 | 4 | Knave | Knave | True | Contradiction (Knave said True) | Impossible |
 
-**2.6 Puzzle 2 Analysis**
+**2.7 Puzzle 2 Analysis**
 
 **Statement A:** "Same kind" ($A \iff (A \land B) \lor (\neg A \land \neg B)$)
 
@@ -96,7 +98,7 @@ A and B claim opposite things. Therefore, one must be telling the truth and one 
 | 3 | Knave | Knight | False | True | A is Knave and said False; B is Knight and said True | Valid |
 | 4 | Knave | Knave | True | False | A is Knave but said True | Impossible |
 
-**2.7 Puzzle 3 Analysis**
+**2.8 Puzzle 3 Analysis**
 
 **Statement:** B says "A said 'I am a knave'."
 
