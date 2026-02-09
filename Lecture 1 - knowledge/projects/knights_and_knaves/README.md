@@ -85,3 +85,13 @@ We first check the inner statement asking ourselves Can A say "I am a Knave"? If
 | A | Knight | "I am Knight" | True | Valid |
 | B | Knave | "A said 'I am Knave'" | False | Valid (Lied about A) |
 | C | Knave | "A is Knight" | True | Valid |
+
+# **3. Design**
+
+1. The agent instantiates the symbols for each character.
+2. For better scalability, we use a generator function called validate_game_logic to apply the game rule (the exclusive OR) to all characters.
+3. The English clues are parsed into biconditionals. Direct statements become $ speaker \iff statement$, meta-statements (statements about statements) become nested biconditionals $ speaker \iff (target \iff statement)$.
+4. The model_check function will iterate through every possibilities in the truth table. If a symbol is true in every scenarios where the Knowledge Base is true, it is output as a confirmed identity.
+
+The flowchart below include more details about the design segament:
+![Local Image](design_flowchart.png)
