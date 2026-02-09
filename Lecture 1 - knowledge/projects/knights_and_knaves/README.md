@@ -21,3 +21,67 @@ Engineer a knowledge-based agent that is capable of solving the logical  based o
 - The agent must yield exactly one valid model per symbol for puzzles 0, 1, 2, and 3.
 -  The implementation should utilize some reusable functions to enfore the given rules and logic gates (e.g. XOR). This avoids redundancy. 
 - The agent should successfully check that $KB \vDash \alpha$ based on the given cases in all puzzles.
+
+# **2. Analysis**
+
+**2.1 General Logic Analysis**
+
+Translating English into logic, we need to analyze the relationship between a speakek, their statement, and the reality. The chart below shows the two valid states of the model.
+
+| Character (C) | Type | Always tells truth? | Statement (S) Truth | Formula|
+|:---:|:---:|:---:|:---:|:---:|
+| Knight | True | Yes | True | $C \land S$ |
+| Knave | False | No | False | $\neg C \land \neg S$ |
+
+In both valid states, C and S share the same truth value, allowing us to use a biconditional operator: $$ C \iff S$$ This is becasue a character is a Knight if and only if their statement is true.
+
+**2.2 Puzzle 0 Analysis**
+
+**Statement:** A says "I am both a Knight and a Knave."
+
+We know that a Knight cannot lie, and a Knave cannot tell the truth. Since "Knight AND Knave" is logically impossible (False), if A were a Knight, he would be telling a lie (Impossible as Knight cannot lie). Therefore, A must be a Knave. The following table is the truth table of this puzzle.
+
+| Case | A is... | Statement Truth Value | Logic Check | Conclusion |
+|:---:|:---:|:---:|:---:|:---:|
+| 1 | Knight (True) | True AND False = False | Contradiction (Knight said False) | Impossible |
+| 2 | Knave (False) | True AND False = False | Consistent (Knave said False) | Valid |
+
+**2.3 Puzzle 1 Analysis**
+
+**Statement:** A says "We are both Knaves."
+
+If A is a Knight, he is telling the truth, so he is a Knave which contradicts. Thus, A must be a Knave. Since A is a Knave, his statement "We are both Knaves" must be False. For "A and B are Knaves" to be False (when we already know A is a Knave), B must be a Knight. The following table is the truth table of this puzzle.
+
+| Case | A | B | Statement Truth Value | Logic Check | Conclusion |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| 1 | Knight | Knight | False | Contradiction (Knight said False) | Impossible |
+| 2 | Knight | Knave | False | Contradiction (Knight said False) | Impossible|
+| 3 | Knave | Knight | False | Consistent (Knave said False) | Valid |
+| 4 | Knave | Knave | True | Contradiction (Knave said True) | Impossible |
+
+**2.4 Puzzle 2 Analysis**
+
+**Statement A:** "Same kind" ($A \iff (A \land B) \lor (\neg A \land \neg B)$)
+
+**Statement B:** "Different kinds" ($B \iff (A \land \neg B) \lor (\neg A \land B)$)
+
+A and B claim opposite things. Therefore, one must be telling the truth and one must be lying. If one lies and one truths, they are of "Different Kinds". This makes B's statement ("Different kinds") True. Since B told the truth, B is a Knight. Since they are different, A is a Knave. The following table is the truth table of this puzzle.
+
+| Case | A | B | A's Statment | B's Statement | Logic Check | Conclusion |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 1 | Knight | Knight | True | False | B is Knight but said False | Impossible |
+| 2 | Knight | Knave | False | True | A is Knight but said False | Impossible |
+| 3 | Knave | Knight | False | True | A is Knave and said False; B is Knight and said True | Valid |
+| 4 | Knave | Knave | True | False | A is Knave but said True | Impossible |
+
+**2.5 Puzzle 3 Analysis**
+
+**Statement:** B says "A said 'I am a knave'."
+
+We first check the inner statement asking ourselves Can A say "I am a Knave"? If A is a Knight he speaks the truth meaning he is a knave which contradicts. If A is a Knave, he speaks a lie meaning that he is a knight which contradicts. Therefore, A can never say "I am a Knave." Since A could not have said that, B is lying about what A said. Therefore, B is a Knave. Since B is a Knave, his statement "C is a Knave" is False. Therefore, C is a Knight. Since C is a Knight, his statement "A is a Knight" is True. Therefore A is a Knight. The following table is the truth table of this puzzle.
+
+| Character | Is Knight? | Statement | Is Statement True? | Conclusion |
+|:---:|:---:|:---:|:---:|:---:|
+| A | Knight | "I am Knight" | True | Valid |
+| B | Knave | "A said 'I am Knave'" | False | Valid (Lied about A) |
+| C | Knave | "A is Knight" | True | Valid |
