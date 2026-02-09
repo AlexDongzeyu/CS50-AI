@@ -6,7 +6,7 @@
 
 - **Knowledge Base (KB):** A set of sentences known to be true by the agent. In this project, the KB consists of the "Game Rules" (One can be either Knight or Knave) and the given "Puzzle Clues."
 
-- **Entailment ($KB \vDash \alpha$):** The relationship where, if the Knowledge Base is true, then the conclusion ($\alpha$) must also be true.
+- **Entailment** ($KB \vDash \alpha$): The relationship where, if the Knowledge Base is true, then the conclusion ($\alpha$) must also be true.
 
 - **Model Checking:** The algorithm that is being used to enumerate all possibilities (truth tables) to verify entailment.
 
@@ -57,7 +57,7 @@ Translating English into logic, we need to analyze the relationship between a sp
 | Knight | True | Yes | True | $C \land S$ |
 | Knave | False | No | False | $\neg C \land \neg S$ |
 
-In both valid states, C and S share the same truth value, allowing us to use a biconditional operator: $$ C \iff S$$ This is becasue a character is a Knight if and only if their statement is true.
+In both valid states, C and S share the same truth value, allowing us to use a biconditional operator: $$C \iff S$$ This is becasue a character is a Knight if and only if their statement is true.
 
 **2.5 Puzzle 0 Analysis**
 
@@ -85,9 +85,9 @@ If A is a Knight, he is telling the truth, so he is a Knave which contradicts. T
 
 **2.7 Puzzle 2 Analysis**
 
-**Statement A:** "Same kind" ($A \iff (A \land B) \lor (\neg A \land \neg B)$)
+**Statement A:** "Same kind" $A \iff (A \land B) \lor (\neg A \land \neg B)$
 
-**Statement B:** "Different kinds" ($B \iff (A \land \neg B) \lor (\neg A \land B)$)
+**Statement B:** "Different kinds" $B \iff (A \land \neg B) \lor (\neg A \land B)$
 
 A and B claim opposite things. Therefore, one must be telling the truth and one must be lying. If one lies and one truths, they are of "Different Kinds". This makes B's statement ("Different kinds") True. Since B told the truth, B is a Knight. Since they are different, A is a Knave. The following table is the truth table of this puzzle.
 
@@ -114,16 +114,16 @@ We first check the inner statement asking ourselves Can A say "I am a Knave"? If
 
 1. The agent instantiates the symbols for each character.
 2. For better scalability, we use a generator function called validate_game_logic to apply the game rule (the exclusive OR) to all characters.
-3. The English clues are parsed into biconditionals. Direct statements become $ speaker \iff statement$, meta-statements (statements about statements) become nested biconditionals $ speaker \iff (target \iff statement)$.
+3. The English clues are parsed into biconditionals. Direct statements become $speaker \iff statement$, meta-statements (statements about statements) become nested biconditionals $speaker \iff (target \iff statement)$.
 4. The model_check function will iterate through every possibilities in the truth table. If a symbol is true in every scenarios where the Knowledge Base is true, it is output as a confirmed identity.
 
 The flowchart below include more details about the design segament:
-![Local Image](design_flowchart.png)
+![Local Image](./design_flowchart.png)
 
 # **4. Testing**
 | Test Case | Description | Expected Outcome | Pass/Fail |
 |:---:|:---:|:---:|:---:|
-| 1 | Run Puzzle 0 (A says "I am both"). | Agent identifies A as a Knave. | True | Valid |
-| 2 | Run Puzzle 2 ("Same kind" vs "Different"). | Agent identifies A as Knave, B as Knight. | False | Valid (Lied about A) |
-| 3 | Run Puzzle 3 (B claims A said "I am a Knave"). | "A is Knight" | True | Valid |
-| 4 | Run all puzzles sequentially. | "A is Knight" | True | Valid |
+| 1 | Run Puzzle 0 | A is a Knave | Pass |
+| 2 | Run Puzzle 1 | A is a Knave, B is a Knight | Pass |
+| 3 | Run Puzzle 2 | A is a Knave, B is a Knight | Pass | 
+| 4 | Run puzzle 3 | A is a Knight, B is a Knave, C is a Knight | Pass |
