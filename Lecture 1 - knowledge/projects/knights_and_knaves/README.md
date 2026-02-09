@@ -120,4 +120,10 @@ We first check the inner statement asking ourselves Can A say "I am a Knave"? If
 The flowchart below include more details about the design segament:
 ![Local Image](design_flowchart.png)
 
-
+# **4. Testing**
+| Test Case | Description | Expected Outcome | Pass/Fail |
+|:---:|:---:|:---:|:---:|
+| 1 | Run Puzzle 0 (A says "I am both"). | Agent identifies A as a Knave. | True | Valid |
+| 2 | Run Puzzle 2 ("Same kind" vs "Different"). | Agent identifies A as Knave, B as Knight. | False | Valid (Lied about A) |
+| 3 | Run Puzzle 3 (B claims A said "I am a Knave"). | "A is Knight" | True | Valid |
+| 4 | Run all puzzles sequentially. | "A is Knight" | True | Valid |
