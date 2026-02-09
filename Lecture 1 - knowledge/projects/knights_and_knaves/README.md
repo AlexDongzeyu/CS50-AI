@@ -22,9 +22,31 @@ Engineer a knowledge-based agent that is capable of solving the logical  based o
 -  The implementation should utilize some reusable functions to enfore the given rules and logic gates (e.g. XOR). This avoids redundancy. 
 - The agent should successfully check that $KB \vDash \alpha$ based on the given cases in all puzzles.
 
+**1.4 Project Requirements**
+- **Input:** Implicit rules derived from 4 specific logic puzzles.
+- **Processing:** Converting English statements into logical connectives (And, Or, Not, Biconditional) via the logic.py library.
+- **Output:** Console printout of the definitive status (Knight or Knave) of every character involved.
+
 # **2. Analysis**
 
-**2.1 General Logic Analysis**
+**2.1 Tools and Resources**
+- **Python via VS Code**: Main programming language.
+- **Harvard logic.py library**: Provides dunctions such as And, Or, Not, and model_check.
+- **Git/Github**: Version control.
+- **draw.io**: Making flowcharts.
+
+**2.2 Development Timeline**
+1. **Initialization:** Setup Git repo and analyze the logic.py.
+2. **Abstraction:** Create a function to handle the "XOR" game rule (One can be either Knight or Knave).
+3. **Puzzles 0 & 1:** Implement direct Biconditional statements.
+4. **Puzzle 2:** Implement "Same vs Different" logic using logic gates.
+5. **Puzzle 3:** Implement nested Biconditionals for "He said that..." statements.
+6. **Verification:** Run model_check and document results.
+
+**2.3 Troubleshooting Techniques**
+- 
+
+**2.3 General Logic Analysis**
 
 Translating English into logic, we need to analyze the relationship between a speakek, their statement, and the reality. The chart below shows the two valid states of the model.
 
@@ -35,7 +57,7 @@ Translating English into logic, we need to analyze the relationship between a sp
 
 In both valid states, C and S share the same truth value, allowing us to use a biconditional operator: $$ C \iff S$$ This is becasue a character is a Knight if and only if their statement is true.
 
-**2.2 Puzzle 0 Analysis**
+**2.4 Puzzle 0 Analysis**
 
 **Statement:** A says "I am both a Knight and a Knave."
 
@@ -46,7 +68,7 @@ We know that a Knight cannot lie, and a Knave cannot tell the truth. Since "Knig
 | 1 | Knight (True) | True AND False = False | Contradiction (Knight said False) | Impossible |
 | 2 | Knave (False) | True AND False = False | Consistent (Knave said False) | Valid |
 
-**2.3 Puzzle 1 Analysis**
+**2.5 Puzzle 1 Analysis**
 
 **Statement:** A says "We are both Knaves."
 
@@ -59,7 +81,7 @@ If A is a Knight, he is telling the truth, so he is a Knave which contradicts. T
 | 3 | Knave | Knight | False | Consistent (Knave said False) | Valid |
 | 4 | Knave | Knave | True | Contradiction (Knave said True) | Impossible |
 
-**2.4 Puzzle 2 Analysis**
+**2.6 Puzzle 2 Analysis**
 
 **Statement A:** "Same kind" ($A \iff (A \land B) \lor (\neg A \land \neg B)$)
 
@@ -74,7 +96,7 @@ A and B claim opposite things. Therefore, one must be telling the truth and one 
 | 3 | Knave | Knight | False | True | A is Knave and said False; B is Knight and said True | Valid |
 | 4 | Knave | Knave | True | False | A is Knave but said True | Impossible |
 
-**2.5 Puzzle 3 Analysis**
+**2.7 Puzzle 3 Analysis**
 
 **Statement:** B says "A said 'I am a knave'."
 
@@ -95,3 +117,5 @@ We first check the inner statement asking ourselves Can A say "I am a Knave"? If
 
 The flowchart below include more details about the design segament:
 ![Local Image](design_flowchart.png)
+
+
