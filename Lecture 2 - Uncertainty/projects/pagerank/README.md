@@ -118,9 +118,51 @@ The flowchart below include more details about the design segament:
 ![Local Image](./PageRank_Flowchart.png)
 
 # **4. Testing**
+**Summary:**
 | Test Case | Description | Expected Outcome | Pass/Fail |
 |:---:|:---:|:---:|:---:|
 | 1 | Run Corpus 0 | Page 2 has highest rank (~0.42) | Pass |
 | 2 | Run Corpus 1 | Sampling results match Iteration within ~0.05 | Pass |
 | 3 | Run Corpus 2 | recursion.html is ~0.33 (Successfully handled Sink Node) | Pass | 
 | 4 | Convergence | Iteration stops automatically when stable | Pass |
+
+**Corpus 0**
+| Page | Expected | Actual (Iteration) | Result |
+|:---:|:---:|:---:|:---:|
+| 1.html | 0.2202 | 0.2202 | Match |
+| 2.html | 0.4289 | 0.4289 | Match |
+| 3.html | 0.2202 | 0.2202 | Match | 
+| 4.html | 0.1307 | 0.1307 | Match |
+
+**Corpus 1**
+| Page | Expected | Actual (Iteration) | Result |
+|:---:|:---:|:---:|:---:|
+| bfs.html | 0.1151 | 0.1151 | Match |
+| dfs.html | 0.0806 | 0.0806 | Match |
+| games.html | 0.2272 | 0.2272 | Match |
+| minesweeper.html | 0.1183 | 0.1183 | Match |
+| minimax.html | 0.1305 | 0.1305 | Match |
+| search.html | 0.2100 | 0.2100 | Match |
+| tictactoe.html | 0.1183 | 0.1183 | Match |
+
+**Corpus 2**
+| Page | Expected | Actual (Iteration) | Result |
+|:---:|:---:|:---:|:---:|
+| ai.html | 0.1344 | 0.1344 | Match |
+| algorithms.html | 0.0762 | 0.0762 | Match |
+| c.html | 0.0888 | 0.0888 | Match |
+| inference.html | 0.0921 | 0.0921 | Match |
+| logic.html | 0.0188 | 0.0188 | Match |
+| programming.html | 0.1637 | 0.1637 | Match |
+| python.html | 0.0888 | 0.0888 | Match |
+| recursion.html | 0.3372 | 0.3372 | Match |
+
+- Corpus 0  is considered a normal case, where each web page directs to another one, without any dead ends or self-directed pages. As shown in the chart, the actual output determined by the algorithm perfectly matches the expected output, which tells that the algorithm gives the correct probabilities in normal test cases. 
+- Corpus 1 is an example of a recurring case, where bfs directs to dfs, dfs directs to search, and eventually search.html directs back to bfs. Although this could affect the probability distribution among the web pages, the outcome still matched the expected outputs, which means the algorithm still functions properly under this circumstance. 
+- Corpus 2 on the other hand, exemplifies a dead end case, where recursion.html only points to itself and no other web pages are directed by which. With expectations, the probability of recursion.html resulted in a greatly different number of the expected output, where the expected probability of which is 0.3372, while the actual output was only 0.0510. This suggests that the algorithm can not deal with dictionaries that exist web pages only directed to itself, forming a dead end structure. 
+
+# **Deployment & maintenance**
+
+The page rank algorithm can be widely used in search engines like Google, where it ranks the importance of web pages based on their relevance and importance. Similarly to search engines, the algorithm can also be used in academic research analysis, to determine influential research papers. Beyond searching methods, the page rank algorithm can also be applied to social media content analysis, where it prioritizes the contents that display to users based on the importance to them. 
+
+The major future improvement will be focused on dealing with more complex cases, for example cases that contain a dead end where a web page only directs to itself. Apart from that, the algorithm can work on the tuning of the damping factor, which is a really important factor that directly affects the final outcome. 
