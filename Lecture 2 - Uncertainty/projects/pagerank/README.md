@@ -2,7 +2,7 @@
 # **1. Planning**
 
 **1.1 Key Terms Definitions**
-- **Random Surfer Model:** A stochastic model simulating the behavior of an internet surfer who randomly clicks on links. It assumes that if a user is on a page with many links, they are equally likely to click any of them (if a page has L links, the probability of the surfer clicking any specific link is $1/L$).
+- **Random Surfer Model (model):** A stochastic model simulating the behavior of an internet surfer who randomly clicks on links. It assumes that if a user is on a page with many links, they are equally likely to click any of them (if a page has L links, the probability of the surfer clicking any specific link is $1/L$).
 
 - **Markov Chain:** A mathematical model that undergoes transitions from one state (web page) to another according to certain probabilistic rules. The next state depends only on the current state (state attained in the previous event).
 
@@ -105,3 +105,15 @@ In a standard formula, NumLinks(i) would be 0, leading to a loss of probability 
 |:---:|:---:|:---:|:---:|:---:|
 | 1 | Standard Page | Sums incoming weights | Sums incoming weights | Valid |
 | 2 | Sink Node | Probability Leaks (0.05) | Redistributes Weight (about 0.33) | Valid |
+
+
+# **3. Design**
+
+1. The model parses the HTML directory into a dictionary of sets.
+2. The transition_model function calculates the probability distribution for the next state, ensuring that the sink nodes return a uniform distribution.
+3. The sample_pagerank function iterates N times, tracking visit counts to approximate the rank.
+4. The iterate_pagerank function applies the recursive formula, treating sink nodes as linking to all pages, until the delta is < 0.001.
+
+The flowchart below include more details about the design segament:
+![Local Image](./PageRank_Flowchart.png)
+
