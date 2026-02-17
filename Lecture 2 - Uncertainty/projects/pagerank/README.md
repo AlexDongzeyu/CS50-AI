@@ -8,7 +8,7 @@
 
 - **Damping Factor ($d$):** A probability factor (typically 0.85) representing the likelihood that a user continues clicking links. On the other hand, probability $1-d$ (0.15) represents the likelihood that the user "teleports" to a completely random page in the corpus.
 
-- **Convergence:** The state at which the calculated PageRank values stabilize, changing by no more than a specified threshold between iterations.
+- **Convergence:** The state at which the calculated PageRank values stabilize, changing by no more than a specified threshold (0.001) between iterations.
 
 - **Sink Node (Dead End):** A web page that has no outgoing links (a "Dead End").
 
@@ -58,9 +58,11 @@ $$
 PR(p) = \frac{1 - d}{N} + d \sum_{i} \frac{PR(i)}{NumLinks(i)}
 $$
 
-To derive this formula, we analyze the probability of a random surfer arriving at page p through two mutually exclusive events. First, the Teleportation term ($\frac{1-d}{N}$) accounts for the $1-d$ probability that a user types a random URL. Since they can choose any of the N pages with equal likelihood, the probability for page p is $\frac{1}{N}$. Second, the Surfing term ($d \sum \dots$) accounts for the $d$ probability that a user follows a link. For every page i that links to p, if the user is on page i (probability $PR(i)$), they click the specific link to p with probability $\frac{1}{NumLinks(i)}$. Summing these probabilities gives us the total likelihood.
+To derive this formula, we analyze the probability of a random surfer arriving at page p through two mutually exclusive events.
+ 1. The Teleportation term ($\frac{1-d}{N}$) accounts for the $1-d$ (15%) probability that a user types a random URL directly. Since they can choose any of the N pages in the corpus with equal likelihood, the probability for landing on page p via teleportation is $\frac{1}{N}$. 
+ 2. The Surfing term ($d \sum \dots$) accounts for the $d$ (85%)probability that a user follows a link. For a user to arrive at page $p$ by clicking, they must currently be on a page $i$ that links to $p$. The probability they are on page $i$ is $PR(i)$. The probability they choose the specific link to $p$ is $\frac{1}{NumLinks(i)}$. We sum this probability for all pages $i$ that link to $p$.
 
-This logic splits the user's behavior into two distinct states:
+This table below shows how the user's behavior into two distinct states:
 | Behavior | Detailed Action | Formula Term | Probability |
 |:---:|:---:|:---:|:---:|
 | Teleport | User types a random URL | $\frac{1-d}{N}$ | 0.15 / Total Pages |
@@ -79,7 +81,21 @@ We know that page 2 is linked to by page 1 and page 3. Since page 1 and 3 are al
 | 3.html| 2, 4 | Moderate | Receives link from 2 |
 | 4.html | 2 | Lowest | Only receives link from 3 |
 
-**2.6 Corpus 2 Analysis (Sink Node Edge Case)**
+**2.6 Corpus 1 Analysis**
+
+**Structure:** bfs to dfs to search to bfs.
+
+This corpus represents a recursion with probabilities flows in a loop. We observe that games, minesweeper, and tictactoe are the leaf nodes being fed by search. However, search itself is fed by dfs, which is fed by bfs. Because search is the hub that feeds the leaf nodes and recycles probability back to bfs, it should hold significant weight.
+
+
+| Page | Links To... | Logic | Conclusion |
+|:---:|:---:|:---:|:---:|
+| bfs.html | dfs | Feeds Loop | Valid |
+| dfs.html | minimax, search | Feeds Loop | Valid |
+| search.html | bfs, games, etc. | Hub Node | High Rank |
+| games.html | None | Leaf Node | Moderate |
+
+**2.7 Corpus 2 Analysis (Sink Node Edge Case)**
 
 **Structure:** recursion.html has no outgoing links.
 In a standard formula, NumLinks(i) would be 0, leading to a loss of probability (division by zero and logic skip). To fix this, we can apply the rule that if len(links) == 0, treat as len(links) == N.
