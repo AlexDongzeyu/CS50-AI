@@ -2,28 +2,90 @@
 # **1. Planning**
 
 **1.1 Key Terms Definitions**
-- **Random Surfer Model:** A stochastic model simulating the behavior of an internet user who clicks on links at random. It assumes that if a user is on a page with many links, they are equally likely to click any of them.
+- **Random Surfer Model:** A stochastic model simulating the behavior of an internet surfer who randomly clicks on links. It assumes that if a user is on a page with many links, they are equally likely to click any of them (if a page has L links, the probability of the surfer clicking any specific link is $1/L$).
 
-- **Markov Chain:** A mathematical system that undergoes transitions from one state (web page) to another according to certain probabilistic rules. The next state depends only on the current state.
+- **Markov Chain:** A mathematical model that undergoes transitions from one state (web page) to another according to certain probabilistic rules. The next state depends only on the current state (state attained in the previous event).
 
-- **Damping Factor ($d$):** A probability factor (typically 0.85) representing the likelihood that a user continues clicking links. With probability $1-d$, the user "teleports" to a completely random page in the corpus.
+- **Damping Factor ($d$):** A probability factor (typically 0.85) representing the likelihood that a user continues clicking links. On the other hand, probability $1-d$ (0.15) represents the likelihood that the user "teleports" to a completely random page in the corpus.
 
-- **Convergence:** The point at which the calculated PageRank values stabilize, changing by no more than a specified threshold (0.001) between iterations.
+- **Convergence:** The state at which the calculated PageRank values stabilize, changing by no more than a specified threshold between iterations.
 
-- **Sink Node (Dead End):** A webpage that has no outgoing links to other pages.
+- **Sink Node (Dead End):** A web page that has no outgoing links (a "Dead End").
 
 **1.2 Goal:**
 
-Engineer an AI algorithm capable of determining the importance (PageRank) of web pages within a corpus using Python. The solution implements two different approaches of sampling: approximating rank by simulating a random surfer visiting 10,000 pages (Markov Chain); and iteration: calculating exact rank using a recursive mathematical formula until its numerial convergence.
+Engineer a knowledge-based AI agent capable of determining the importance (PageRank) of web pages within a corpus. The solution will implement two distinct methodologies: approximating rank via Sampling (Markov Chain) and calculating exact rank via Iteration (Recursive Formula).
 
 **1.3 Success Criteria**
-- The model must return a probability distribution that always sums to 1, regardless of whether the page has links or is a sink node.
-- The sample pagerank function that uses $N=10,000$ must yield results within approximately 0.05 of the iterative approach.
-- The iterate pagerank function must correctly handle Corpus 2 using recursion and dead ends. It must not output $\approx 0.05$ for recursion.html, which is a known failure mode; it must yield the correct probability of approximately 0.33.
-- The iteration loop must terminate when the maximum change in any page rank is $< 0.001$.
+- The model must return a probability distribution that always sums to 1. It must accurately handle "Sink Nodes" (pages with no outgoing links), treating them as linking to all pages to prevent probability loss.
+- The sample pagerank function must yield results statistically consistent within approximately 0.05 margin with the iterative approach.
+- The iterate pagerank function must correctly handle Corpus 2 using recursion and dead ends. The iteration loop must achieve convergence (terminate) when the maximum change in any page rank is $< 0.001$.
+- The implementation should utilize a reusable function to enfore the damping factor rules consistently.
 
 **1.4 Project Requirements**
 - **Input:** A directory (corpus) containing HTML files.
 - **Processing:** Parsing HTML structure, building an adjacency dictionary, and then calculating probabilities.
-- **Output:** A sorted list of pages and their calculated PageRank values (e.g., 1.html: 0.2202).
+- **Output:** A sorted console printout of pages and their calculated PageRank values (e.g., 1.html: 0.2202).
 
+# **2. Analysis**
+
+**2.1 Tools and Resources**
+- **Python via VS Code**: Main programming language.
+- **Libraries**
+    - os, sys, re: For corpus parsing the HTML corpus structure.
+    - random: For weighted sampling in the Markov Chain
+- **Git/Github**: Version control.
+- **draw.io**: Constructing flowcharts.
+
+**2.2 Development Timeline**
+1. **Initialization:** Setup Git repo and analyze the crawl() function.
+2. **Logic for probability:** Implement transition_model function to return a dictionary of probabilities summing to 1.
+3. **Sampling pagerank:** Implement sample_pagerank using weighted random selection (random.choices).
+4. **Iterate pagerank** Implement iterate_pagerank using the recursive formula.
+5. **Refinement:** Handle the Sink Node edge case in Corpus 2.
+6. **Verification:** Run model checks on all corpora and document results.
+
+**2.3 Troubleshooting Techniques**
+- If PageRank values do not sum to 1, we must verify that the teleportation probability $\frac{1-d}{N}$ is added to every page.
+- If the iterative algorithm runs endlessly, we should check if abs() is being used when calculating the difference between old and new ranks.
+- If Corpus 2 results are unexpectedly low (e.g., 0.05), we must verify that the Sink Nodes are explicitly handled in the loop.
+
+**2.4 General Logic Analysis**
+
+Translating the web structure into logic, we need to analyze the relationship between the Damping Factor, the Links, and the Probability. After analysis, we can derive the formula below:
+
+$$
+PR(p) = \frac{1 - d}{N} + d \sum_{i} \frac{PR(i)}{NumLinks(i)}
+$$
+
+To derive this formula, we analyze the probability of a random surfer arriving at page p through two mutually exclusive events. First, the Teleportation term ($\frac{1-d}{N}$) accounts for the $1-d$ probability that a user types a random URL. Since they can choose any of the N pages with equal likelihood, the probability for page p is $\frac{1}{N}$. Second, the Surfing term ($d \sum \dots$) accounts for the $d$ probability that a user follows a link. For every page i that links to p, if the user is on page i (probability $PR(i)$), they click the specific link to p with probability $\frac{1}{NumLinks(i)}$. Summing these probabilities gives us the total likelihood.
+
+This logic splits the user's behavior into two distinct states:
+| Behavior | Detailed Action | Formula Term | Probability |
+|:---:|:---:|:---:|:---:|
+| Teleport | User types a random URL | $\frac{1-d}{N}$ | 0.15 / Total Pages |
+| Surf | User clicks a specific link | $d \times \frac{PR(i)}{NumLinks(i)}$ | 0.85 / Link Count |
+
+**2.5 Corpus 0 Analysis (Standard Case)**
+
+**Structure:** A small network where every page has at least one link. 
+
+We know that page 2 is linked to by page 1 and page 3. Since page 1 and 3 are also linked to each other, they feed probability into page 2. Page 4 is only linked to by page 2. Therefore, we expect Page 2 to have the highest rank.
+
+| Page | Links To... | Expected Rank | Logic |
+|:---:|:---:|:---:|:---:|
+| 1.html | 2 | Moderate | Receives link from 2 |
+| 2.html | 1, 3 | Highest | Receives links from 1 and 3 |
+| 3.html| 2, 4 | Moderate | Receives link from 2 |
+| 4.html | 2 | Lowest | Only receives link from 3 |
+
+**2.6 Corpus 2 Analysis (Sink Node Edge Case)**
+
+**Structure:** recursion.html has no outgoing links.
+In a standard formula, NumLinks(i) would be 0, leading to a loss of probability (division by zero and logic skip). To fix this, we can apply the rule that if len(links) == 0, treat as len(links) == N.
+
+
+| Case | Page Type | Standard Logic Result | Corrected Logic Result | Conclusion |
+|:---:|:---:|:---:|:---:|:---:|
+| 1 | Standard Page | Sums incoming weights | Sums incoming weights | Valid |
+| 2 | Sink Node | Probability Leaks (0.05) | Redistributes Weight (about 0.33) | Valid |
