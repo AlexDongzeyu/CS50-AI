@@ -117,3 +117,10 @@ In a standard formula, NumLinks(i) would be 0, leading to a loss of probability 
 The flowchart below include more details about the design segament:
 ![Local Image](./PageRank_Flowchart.png)
 
+# **4. Testing**
+| Test Case | Description | Expected Outcome | Pass/Fail |
+|:---:|:---:|:---:|:---:|
+| 1 | Run Corpus 0 | Page 2 has highest rank (~0.42) | Pass |
+| 2 | Run Corpus 1 | Sampling results match Iteration within ~0.05 | Pass |
+| 3 | Run Corpus 2 | recursion.html is ~0.33 (Successfully handled Sink Node) | Pass | 
+| 4 | Convergence | Iteration stops automatically when stable | Pass |
