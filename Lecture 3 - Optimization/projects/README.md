@@ -55,3 +55,90 @@ The technical boundaries and expected inputs/outputs for this project are outlin
 - **Input:** Two text files — a structure file (defining the grid layout using `#` for blocked cells and `_` for open cells) and a words file (defining the full vocabulary domain, one word per line).
 - **Processing:** Parsing structural overlaps to identify intersections, building an arc queue for consistency enforcement, pruning domains via AC-3, and executing a recursive depth-first search guided by MRV, Degree, and LCV heuristics.
 - **Output:** A formatted console printout of the solved crossword grid and an optional exported `.png` image of the completed puzzle.
+
+# **2. Analysis**
+
+**2.1 Tools and Resources**
+
+The following software tools and libraries were utilized to develop, test, and document this project, each serving a specific necessary function:
+
+- **Python 3.12 via VS Code**: The primary programming language and integrated development environment (IDE) used to write and execute the algorithmic logic.
+- **Libraries**
+    - **copy**: Specifically `copy.deepcopy()`, used to create a separate copy of the domains so that words can be removed during iteration without causing a runtime error.
+    - **collections.deque**: Used to maintain the queue for the AC-3 algorithm, allowing arcs to be added from the right and removed from the left efficiently.
+    - **PIL (Pillow)**: Used to generate the graphical output of the completed crossword assignment.
+- **Git/GitHub**: Used for version control.
+- **draw.io**: Used to construct the algorithm flowchart.
+
+**2.2 Development Timeline**
+
+The development of this project followed a structured timeline:
+
+1. **Initialization:** Setup Git repo and analyze the `Crossword` and `Variable` classes.
+2. **Logic for node consistency:** Implement `enforce_node_consistency` to remove words of incorrect lengths.
+3. **Logic for arc consistency:** Implement `revise` and `ac3` to remove words that violate the character overlap rules.
+4. **Validation:** Implement `assignment_complete` and `consistent` to check that all variables are assigned and all constraints are satisfied.
+5. **Optimization:** Implement `order_domain_values` (LCV) and `select_unassigned_variable` (MRV and Degree heuristics).
+6. **Search Integration:** Implement `backtrack` using the recursive search tree.
+7. **Verification:** Run model checks on all structures and document results.
+
+**2.3 Troubleshooting Techniques**
+
+The following troubleshooting techniques are applied when unexpected results occur:
+
+- If a `RuntimeError` occurs (dictionary changed size during iteration), we must verify that a deep copy of the domain is being looped over while the original domain is being modified.
+- If the AC-3 algorithm runs endlessly, we should check if neighbor arcs are only added back to the queue when `revise()` returns `True`.
+- If the output contains duplicate words, we must verify that the `consistent()` function checks `len(assignment.values()) == len(set(assignment.values()))`.
+
+**2.4 General Logic Analysis**
+
+Translating the crossword structure into logic, we need to analyze the relationship between Unary Constraints, Binary Constraints, and Heuristics. After analysis, we can derive the constraint formula below:
+
+For any overlapping variables $X$ and $Y$ with intersection indices $i$ and $j$:
+
+$$Constraint(X, Y) = \{ (x, y) \in D_X \times D_Y \mid x[i] = y[j] \}$$
+
+To enforce this formula, we analyze the algorithm's behavior through two mutually exclusive search states.
+ 1. The Inference term (`ac3`) accounts for the elimination of words that cannot satisfy the overlap constraint. Since $x[i]$ must equal $y[j]$, any word $x$ that has no valid counterpart $y$ in domain $D_Y$ is removed entirely from domain $D_X$.
+ 2. The Heuristic term (MRV and LCV) accounts for the order in which variables and values are explored in the search tree. By selecting the variable with the fewest remaining values first, the algorithm detects dead ends sooner and avoids unnecessary backtracking.
+
+This table below shows how the algorithm's behavior divides into two distinct states:
+| Independent Variable (Behavior) | Logic State | Algorithmic Tool | Resulting Action |
+|:---:|:---:|:---:|:---:|
+| Node Consistency | Check word length | `len(word) == var.length` | Removes words of incorrect length |
+| Arc Consistency | Check overlap characters | `x_word[i] == y_word[j]` | Removes words with no valid counterpart |
+| Backtrack Search | Explore valid assignments | `select_unassigned_variable()` | Recursively builds the board |
+
+**2.5 Structure 0 Analysis (Standard Case)**
+
+**Structure:** A small grid where two variables intersect exactly once.
+
+We know that Variable 1 (Across) and Variable 2 (Down) overlap at one shared cell. Since Variable 1 is assigned first, the character at its overlap index directly restricts what words are valid for Variable 2. If Variable 1 is assigned "FIVE", then Variable 2 must contain the letter "I" at its overlap index. Therefore, we expect AC-3 alone to fully narrow the domains in this structure.
+
+| Variable | Intersects With... | Expected Action | Logic |
+|:---:|:---:|:---:|:---:|
+| V1 (Across, Len 4) | V2 | Restricts V2 Domain | Forces V2 to match character at overlap |
+| V2 (Down, Len 5) | V1 | Restricts V1 Domain | Forces V1 to match character at overlap |
+
+**2.6 Structure 1 Analysis (Heuristic Optimization)**
+
+**Structure:** A medium grid with multiple intersections and varying variable lengths.
+
+This structure represents a search space with many potential word combinations. We observe that central hub variables intersect with 3 or 4 other variables, while edge variables only intersect with 1. Because the central hub restricts the most other variables at once, the Degree Heuristic should select it first to collapse the search space as quickly as possible.
+
+| Variable Type | Intersections | Selection Priority | Logic |
+|:---:|:---:|:---:|:---:|
+| Hub Node | 4 | Highest (Degree Heuristic) | Restricts the most variables at once |
+| Standard Node | 2 | Moderate | Evaluated mid-search |
+| Edge Node | 1 | Lowest | Least constrained, filled last |
+
+**2.7 Structure 2 Analysis (Deep Recursion Case)**
+
+**Structure:** A large grid where AC-3 alone cannot fully solve the board.
+
+In a standard inference pass, AC-3 will reduce several domains down to 2 or 3 remaining words but cannot narrow them further. To resolve this, we apply backtracking recursion. If an assignment leads to a contradiction, the algorithm returns `None`, removes the assignment, and tries the next word in the domain.
+
+| Case | Tree State | Standard Logic | Corrected Logic (Backtrack) | Verification |
+|:---:|:---:|:---:|:---:|:---:|
+| 1 | Valid Assignment | Proceeds deeper | Adds to dict, calls `backtrack()` | Valid |
+| 2 | Invalid Assignment | Fails completely | Returns `None`, removes key, tries next | Valid |
