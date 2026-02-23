@@ -224,7 +224,7 @@ To further validate the precision of the algorithm, the actual outputs were comp
 - Corpus 1 is an example of a recurring case, where bfs directs to dfs, dfs directs to search, and eventually search.html directs back to bfs. Although this could affect the probability distribution among the web pages, the outcome still matched the expected outputs, which means the algorithm still functions properly under this circumstance. 
 - Corpus 2 on the other hand, exemplifies a dead end case, where recursion.html only points to itself and no other web pages are directed by which. With expectations, the probability of recursion.html resulted in a greatly different number of the expected output, where the expected probability of which is 0.3372, while the actual output was only 0.0510. This suggests that the algorithm can not deal with dictionaries that exist web pages only directed to itself, forming a dead end structure. 
 
-# **Deployment & maintenance**
+# **5. Deployment & maintenance**
 
 The page rank algorithm can be widely used in search engines like Google, where it ranks the importance of web pages based on their relevance and importance. Similarly to search engines, the algorithm can also be used in academic research analysis, to determine influential research papers. Beyond searching methods, the page rank algorithm can also be applied to social media content analysis, where it prioritizes the contents that display to users based on the importance to them. 
 

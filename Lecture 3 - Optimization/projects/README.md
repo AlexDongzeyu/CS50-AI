@@ -142,3 +142,48 @@ In a standard inference pass, AC-3 will reduce several domains down to 2 or 3 re
 |:---:|:---:|:---:|:---:|:---:|
 | 1 | Valid Assignment | Proceeds deeper | Adds to dict, calls `backtrack()` | Valid |
 | 2 | Invalid Assignment | Fails completely | Returns `None`, removes key, tries next | Valid |
+
+# **3. Design**
+
+**3.1 Pseudocode**
+Below is the pseudo code outlining the core logic for each required function:
+
+```text
+ac3(arcs):
+
+    If arcs is None, initialize queue with all overlapping variable pairs
+    While queue is not empty:
+        Pop (X, Y) from the left of queue
+        If revise(X, Y) removes any words from X's domain:
+            If X's domain is now empty:
+                Return False (unsolvable problem)
+            For each neighbor Z of X, excluding Y:
+                Add (Z, X) to the right of queue
+    Return True
+
+backtrack(assignment):
+
+    If assignment contains all variables:
+        Return assignment (complete solution)
+
+    Select next unassigned variable using MRV and Degree heuristics
+
+    For each word in variable's domain (ordered by LCV heuristic):
+        If word is consistent with current assignment:
+            Add {variable: word} to assignment
+            result = backtrack(assignment)
+            If result is not None:
+                Return result
+            Remove {variable: word} from assignment (backtrack)
+
+    Return None (no valid word found, trigger backtrack)
+```
+
+The pseudo code above shows that the program will run in two distinct sequential phases. First, it will execute the inference (`ac3`), using the structural overlaps to prune invalid words from every variable's domain before the search begins. Second, it will execute the search (`backtrack`), using a continuous recursive loop that builds the assignment one variable at a time until every variable has been filled.
+
+**3.2 Flowchart**
+
+The flowchart below visually represents this sequential execution and decision-making logic:
+![Local Image](./Crossword_Flowchart.png)
+
+
