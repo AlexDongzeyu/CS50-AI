@@ -178,7 +178,7 @@ The program runs in two sequential phases. First, inference (`ac3`) uses the str
 **3.2 Flowchart**
 
 The flowchart below visually represents this sequential execution and decision-making logic:
-![Local Image](./Crossword_Flowchart.png)
+![Local Image](./crossword_flowchart.png)
 
 
 # **4. Testing**
