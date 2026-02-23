@@ -7,7 +7,7 @@ The following key terms are defined to fully understand the concepts and mathema
 
 - **Constraint Satisfaction Problem (CSP):** A problem defined by a set of variables, a domain of possible values for each variable, and a set of constraints. The goal is to find an assignment of values to all variables that satisfies every constraint at the same time.
 
-- **Node Consistency (Unary Constraint):** The state at which every value in a variable's domain satisfies the variable's unary constraint. In this project, a word's length must exactly equal the variable's length in the crossword grid.
+- **Node Consistency (Unary Constraint):** The state which every value in a variable's domain satisfies the variable's unary constraint. In this project, a word's length must exactly equal the variable's length in the crossword grid.
 
 - **Arc Consistency (Binary Constraint):** The state at which every value in a variable's domain satisfies its binary constraints with every neighboring variable. For intersecting crossword variables, the character at $X$'s overlap index must equal the character at $Y$'s overlap index.
 
@@ -41,7 +41,7 @@ Engineer a knowledge-based AI agent capable of determining the optimal word assi
 
 **1.4 Success Criteria**
 
-To evaluate the effectiveness and accuracy of the algorithm, the following success criteria must be met:
+To evaluate the effectiveness and accuracy of the algorithm, the following success criteria should be met:
 
 - The model must return a complete assignment dictionary where every variable is paired with a unique, valid word. It must accurately handle intersecting variables, treating them as binary constraints to prevent character conflicts at shared cells.
 - The `ac3` function must yield domains that are fully arc-consistent before the search begins, significantly reducing the number of possibilities the backtracking algorithm needs to explore.
@@ -115,7 +115,7 @@ This table below shows how the algorithm's behavior divides into two distinct st
 
 We know that Variable 1 (Across) and Variable 2 (Down) overlap at one shared cell. Since Variable 1 is assigned first, the character at its overlap index directly restricts what words are valid for Variable 2. If Variable 1 is assigned "FIVE", then Variable 2 must contain the letter "I" at its overlap index. Therefore, we expect AC-3 alone to fully narrow the domains in this structure.
 
-| Variable | Intersects With... | Expected Action | Logic |
+| Variable | Intersections | Expected Action | Logic |
 |:---:|:---:|:---:|:---:|
 | V1 (Across, Len 4) | V2 | Restricts V2 Domain | Forces V2 to match character at overlap |
 | V2 (Down, Len 5) | V1 | Restricts V1 Domain | Forces V1 to match character at overlap |
@@ -187,3 +187,42 @@ The flowchart below visually represents this sequential execution and decision-m
 ![Local Image](./Crossword_Flowchart.png)
 
 
+# **4. Testing**
+**Summary:**
+
+The following test cases were executed to validate the accuracy of the algorithm:
+
+| Test Case | Description | Expected Outcome | Pass/Fail |
+|:---:|:---:|:---:|:---:|
+| 1 | Run Structure 0 / Words 0 | Board filled correctly with no constraint violations | Pass |
+| 2 | Run Structure 1 / Words 1 | Full board generated with no duplicate words | Pass |
+| 3 | Run Structure 2 / Words 2 | Heuristics reduce search time and board is solved correctly | Pass |
+| 4 | Impossible Constraints | `backtrack` returns `None`, prints "No solution." | Pass |
+
+**4.1 Detailed Output Verification**
+
+To further validate the precision of the algorithm, the actual outputs were compared against the expected constraints for each structure:
+
+**Structure 0**
+| Variable | Expected Assignment Logic | Actual Output | Verification |
+|:---:|:---:|:---:|:---:|
+| V1 (Across) | Word of length 4 | "FIVE" | Match |
+| V2 (Down) | Word of length 5, shares character with V1 | "SEVEN" | Match |
+
+**Structure 1**
+| Variable | Expected Assignment Logic | Actual Output | Verification |
+|:---:|:---:|:---:|:---:|
+| V1 (Hub) | Longest central word | "INTELLIGENCE" | Match |
+| V2 (Intersect 1) | Matches shared character at overlap | "LOGIC" | Match |
+| V3 (Intersect 2) | Matches shared character at overlap | "SEARCH" | Match |
+| V4 (Edge) | Unique, no duplicates | "RESOLVE" | Match |
+
+- Structure 0 is considered a normal case, where two variables intersect once without any complex overlap network. As shown in the chart, the actual output determined by the algorithm perfectly satisfies the binary constraint, which tells us that the algorithm correctly enforces both node and arc consistency in a simple case.
+- Structure 1 is an example of a hub-and-spoke case, where a long central word dictates the characters available to multiple shorter words. Although this creates a large number of potential combinations, the MRV and Degree heuristics correctly sorted the variables and eliminated failures early. The outcome still matched the expected outputs, which means the algorithm still functions properly under this circumstance and successfully prevents duplicate word assignments.
+- Structure 2 on the other hand, exemplifies a deep recursion case, where the domain sizes are large and AC-3 alone cannot narrow them to a single answer. With expectations, the search time without heuristics would have been significantly longer. By implementing MRV and LCV, the actual output completed in approximately 0.10 seconds. This suggests that the algorithm can handle large vocabulary domains without stalling the search.
+
+# **5. Deployment & Maintenance**
+
+The constraint satisfaction algorithm can be widely used in scheduling systems like university course timetabling, where it assigns classes to rooms and time slots based on capacity and overlapping student schedules. Similarly to scheduling systems, the algorithm can also be used in logistical route planning, to determine delivery routes that satisfy strict time and capacity constraints. Beyond planning applications, the CSP algorithm can also be applied to automated puzzle solvers such as Sudoku, where it strictly enforces row, column, and box uniqueness.
+
+The major future improvement will be focused on dealing with more complex cases, for example large-scale grids like the NYT Sunday Crossword. Apart from that, the algorithm can work on implementing the MAC (Maintaining Arc Consistency) methodology, which runs the AC-3 function during the backtrack loop rather than only once at the beginning, which is a really important optimization that directly affects the final speed for extreme edge cases.
