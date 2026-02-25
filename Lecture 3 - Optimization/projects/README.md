@@ -95,7 +95,7 @@ To enforce this formula, the algorithm operates through two separate states.
  2. Heuristics (MRV and LCV) — controls what order variables and values get explored. Targeting the variable with fewest options first means dead ends show up earlier and less backtracking happens.
 
 Here's how each behavior maps to a specific state:
-| Behavior | Logic | Algorithm | Action |
+| Behavior | Logic State | Algorithmic Tool | Resulting Action |
 |:---:|:---:|:---:|:---:|
 | Node Consistency | Check word length | `len(word) == var.length` | Removes words of incorrect length |
 | Arc Consistency | Check overlap characters | `x_word[i] == y_word[j]` | Removes words with no valid counterpart |
