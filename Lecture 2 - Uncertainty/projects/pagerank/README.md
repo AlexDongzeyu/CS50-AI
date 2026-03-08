@@ -220,12 +220,12 @@ To further validate the precision of the algorithm, the actual outputs were comp
 | python.html | 0.0888 | 0.0888 | Match |
 | recursion.html | 0.3372 | 0.3372 | Match |
 
-- Corpus 0  is considered a normal case, where each web page directs to another one, without any dead ends or self-directed pages. As shown in the chart, the actual output determined by the algorithm perfectly matches the expected output, which tells that the algorithm gives the correct probabilities in normal test cases. 
-- Corpus 1 is an example of a recurring case, where bfs directs to dfs, dfs directs to search, and eventually search.html directs back to bfs. Although this could affect the probability distribution among the web pages, the outcome still matched the expected outputs, which means the algorithm still functions properly under this circumstance. 
-- Corpus 2 on the other hand, exemplifies a dead end case, where recursion.html only points to itself and no other web pages are directed by which. With expectations, the probability of recursion.html resulted in a greatly different number of the expected output, where the expected probability of which is 0.3372, while the actual output was only 0.0510. This suggests that the algorithm can not deal with dictionaries that exist web pages only directed to itself, forming a dead end structure. 
+- Corpus 0 is a standard case where each page links to at least one other page, with no dead ends. The actual output matched the expected output, which confirms that the algorithm works correctly in normal cases.
+- Corpus 1 is a looping case, where bfs links to dfs, dfs links to search, and search links back to bfs. Despite the loop, the actual output still matched the expected output, which means the algorithm handles this case correctly.
+- Corpus 2 is a dead end case, where recursion.html only links to itself. The actual output (0.0510) was much lower than the expected output (0.3372), which shows that the algorithm does not correctly handle pages that only link to themselves.
 
 # **5. Deployment & maintenance**
 
-The page rank algorithm can be widely used in search engines like Google, where it ranks the importance of web pages based on their relevance and importance. Similarly to search engines, the algorithm can also be used in academic research analysis, to determine influential research papers. Beyond searching methods, the page rank algorithm can also be applied to social media content analysis, where it prioritizes the contents that display to users based on the importance to them. 
+The PageRank algorithm has real-world applications in search engines like Google, where it ranks web pages by importance. It can also be applied in academic research to identify influential papers, and in social media to determine which content is shown to users. 
 
-The major future improvement will be focused on dealing with more complex cases, for example cases that contain a dead end where a web page only directs to itself. Apart from that, the algorithm can work on the tuning of the damping factor, which is a really important factor that directly affects the final outcome. 
+A key future improvement is handling more complex cases, such as web pages that only link to themselves. In addition, exploring different values for the damping factor could improve the accuracy of the results. 
